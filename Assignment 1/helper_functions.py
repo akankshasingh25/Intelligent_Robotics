@@ -1,7 +1,6 @@
 """Helper functions for Bug simulations"""
 import math
-import sympy as sp
-import numpy as np
+import sympy
 
 #1. Equation of line from two points
 def line_equation(p1, p2):
@@ -14,6 +13,8 @@ def line_between_two_points(p1, p2):
   
 #2. Distance between two points
 def distance_between(p1,p2):
+    p1 = Point(p1)
+    p2 = Point(p2)
     return p1.distance(p2)
    
 # Angle between two points
