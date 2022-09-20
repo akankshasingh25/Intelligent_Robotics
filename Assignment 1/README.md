@@ -18,12 +18,12 @@ the trajectory such that the goal is never reachable.
 	* while not able to move towards goal
 	* follow obstacle moving to the right until can head towards goal
 
-4. Prove that Bug 0 is not a complete algorithm
+4. Prove that Bug 0 is not a complete algorithm.
 
 5. Implement Bug 2 algorithm on an environment consisting of 4 rectangular obstacle.
 
-6. Create an environment where Bug 2 can be incomplete algorithm and show through your implementation
-that it is not complete. Explain why it is incomplete?
+6. Create an environment where Bug 2 (without memory) can be an incomplete algorithm and show
+through your implementation that it is not complete. Explain why it is incomplete?
 
 7. Use trapezoidal decomposition for the environment generated in the previous question and show the
 cells and also the Rebb graph.
