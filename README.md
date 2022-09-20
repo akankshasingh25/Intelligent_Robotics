@@ -1,1 +1,2 @@
-# ECS418-Intelligent_Robotics-Summer'22
+# ECS418: Intelligent-Robotics (Summer Semester-2022)
+## Course Instructor: Sujit PB
