@@ -1,4 +1,4 @@
-## Mid Sem 1
+## Mid Sem
 
 1. In the Assignment 1, Q7, compute the total time required to cover all the cells.
 
