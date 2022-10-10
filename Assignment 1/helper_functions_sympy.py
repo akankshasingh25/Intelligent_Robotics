@@ -1,4 +1,4 @@
-"""Helper functions for Bug simulations"""
+"""Helper functions through SymPy for Bug Simulations"""
 
 import math
 import sympy
