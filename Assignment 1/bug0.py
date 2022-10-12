@@ -56,13 +56,12 @@ while robot.step(TIME_STEP) != -1:
            
     current_position = gps.getValues()
     current_angle = get_bearing_in_degrees(compass.getValues())
-    print(current_angle)
   
     # start of time
     if state == 'start':
         start_position = gps.getValues()
         aligned_to_goal = angle_of(current_position, GOAL_POSITION) > 0.95*current_angle and angle_of(current_position, GOAL_POSITION) < 1.05*current_angle
-        print(aligned_to_goal)
+         
         if aligned_to_goal:
             state = 'go_to_goal'
         else:
