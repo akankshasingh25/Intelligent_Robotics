@@ -69,6 +69,6 @@ class Graph():
  
 # Driver's code
 if __name__ == "__main__":
-    g = visibility_graph
+    g = visible_graph
     g.dijkstra(0)
  
