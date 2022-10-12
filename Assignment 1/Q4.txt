@@ -6,5 +6,5 @@ Prove by counterexample: An example showing that it never reaches a goal.
 
 Proof:
 Considering a scenario where there’s only one obstacle in a spiral shape. 
-Such that the robot hits the obstacle at different hit points on the same obstacle but since leave points is decided deterministically, the leave point for the all the hit points will be same.
+Such that the robot hits the obstacle at different hit points on the same obstacle but since leave points is decided deterministically, the leave point for the all the hit points of same obstacle will be same.
 Hence, the robot will keep following the boundary of the obstacle and never reach the goal.
