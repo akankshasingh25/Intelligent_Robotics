@@ -1,3 +1,3 @@
 Optimize the start location for the coverage such that the time required to cover the area is T', where T' ≤ T:
 
-To optimise the time taken for total coverage discussed in Q1, we need to minimize the overlapping coverage. To optimize we need to place the start location as the start of a trapezoid between the obstacles and choose unidirectional nature of the robot, so that the robot covers trapezoids in spirals
+To optimise the time taken for total coverage discussed in Q1, we need to minimize the overlapping coverage. To optimize we need to place the start location as the start of a trapezoid between the obstacles and choose unidirectional nature of the robot, so that the robot covers trapezoids in a spiral way and has least overlap.
