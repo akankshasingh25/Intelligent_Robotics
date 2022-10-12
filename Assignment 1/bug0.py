@@ -1,144 +1,147 @@
-"""Bug 0 Algorithm"""
+"""Bug0 Algorithm"""
 
 from controller import Robot, Motor, DistanceSensor
 from helper_functions import *
 
-#def run_bug0(robot):
 robot = Robot()
 
-timestep = 64
-max_speed = 6.28
-obs_prox = 150
-pos_epsilon = 0.05
-angle_epsilon = 0.05
-goal_pos = [0,0,0]
+# CONSTANT DECLARATION
+TIME_STEP = 64
+MAX_SPEED = 6.28
+GOAL_POSITION = [0.25, 0.50, 0.0]
+REACHED_GOAL = 0.05
+ENCOUNTERED_OBSTACLE = 100
+GOAL_IN_RANGE = 0.05
 
+# motors initialization
 left_motor = robot.getDevice('left wheel motor')
-right_motor = robot.getDevice('right wheel motor') 
-
+right_motor = robot.getDevice('right wheel motor')
 left_motor.setPosition(float('inf'))
 right_motor.setPosition(float('inf'))
-
 left_motor.setVelocity(0.0)
 right_motor.setVelocity(0.0)
 
-gps = robot.getDevice('gps')
-gps.enable(timestep)
+# devices initialization
 
-compass = robot.getDevice('compass')
-compass.enable(timestep)
-
-prox_sensors = []
-prox_sensor_names = ['ps0', 'ps1', 'ps2', 'ps3',
-                    'ps4', 'ps5','ps6','ps7']
-
+# proximity sensor to know goal or obstacle in range
+proximity_sensor = []
+proximity_sensor_names = [
+    'ps0', 'ps1', 'ps2', 'ps3',
+    'ps4', 'ps5', 'ps6', 'ps7'
+]
 for i in range(8):
-    prox_sensors.append(robot.getDevice(prox_sensor_names[i]))
-    prox_sensors[i].enable(timestep)
+    proximity_sensor.append(robot.getDevice(proximity_sensor_names[i]))
+    proximity_sensor[i].enable(TIME_STEP)
 
-prox_sensors_values = [0 for i in range(8)]
+proximity_sensor_values = [0 for i in range(8)]
+
+# gps to get the location
+gps = robot.getDevice('gps')
+gps.enable(TIME_STEP)
+
+# compass to get the sense of direction
+compass = robot.getDevice('compass')
+compass.enable(TIME_STEP)
 
 state = 'start'
 
-# Main loop:
-while robot.step(timestep) != -1:
-    
-    left_motor_speed = max_speed *0.5
-    right_motor_speed = max_speed*0.5
-    
+# main loop
+while robot.step(TIME_STEP) != -1:
+
+    left_speed  = 0.5 * MAX_SPEED
+    right_speed = 0.5 * MAX_SPEED
+
     for i in range(8):
-        prox_sensors_values[i] = proxc_sensors[i].getValues()
-        
-    curr_pos = gps.getValues()
-    current_angle = get_bearing_in_degrees(compass.getValues())
-    
-    if state == 'start':
-        start_pos = gps.getValues()
-        aligned_to_goal = (angle_of(curr_pos, goal_pos)> curr_angle*0.98) and (angle_of(curr_pos, goal_pos)< curr_angle*1.02)
-        
-        if not aligned_to_goal:
-            print('Aligning to goal')
-            left_motor_speed = -max_speed*0.5
-            right_motor_speed = max_speed*0.5
-            state = 'start'
-        else:
-            state = 'go to goal'
+        proximity_sensor_values[i] = proximity_sensor[i].getValue() 
            
-    elif state == 'go to goal':
-                
-        obstacle_is_detected = (prox_sensors_values[0] and prox_sensors_values[7]) > obs_prox        
-        if obstacle_is_detected:
+    current_position = gps.getValues()
+    current_angle = get_bearing_in_degrees(compass.getValues())
+    print(current_angle)
+  
+    # start of time
+    if state == 'start':
+        start_position = gps.getValues()
+        aligned_to_goal = angle_of(current_position, GOAL_POSITION) > 0.95*current_angle and angle_of(current_position, GOAL_POSITION) < 1.05*current_angle
+        print(aligned_to_goal)
+        if aligned_to_goal:
+            state = 'go_to_goal'
+        else:
+            print('Robot status: Aligning to the goal')
+            left_speed  = -0.5 * MAX_SPEED
+            right_speed = 0.5 * MAX_SPEED
+            state = 'start'
+            
+    elif state == 'go_to_goal':
+
+        obstacle_detected = proximity_sensor_values[0] > ENCOUNTERED_OBSTACLE and proximity_sensor_values[7] > ENCOUNTERED_OBSTACLE
+
+        if obstacle_detected:
             hit_point = gps.getValues()
-            hit_point_angle = get_bearing_in_degrees(compass.getValues())
-            state = 'follow the obstacle'
-            
-        elif not_on_line(start_pos, goal_pos, curr_pos):
-            heading_angle = curr_angle
-            goal_angle = angle_of(start_pos, goal_pos)
-            
-            if (heading_angle-goal_angle)> angle_epsilon:
-                left_motor_speed = 0.3*max_speed
-                right_motor_speed = 0.1*max_speed
-                print('Aligning to the goal')
-                
-            elif (heading_angle-goal_angle) < -angle_epsilon:
-                left_motor_speed = 0.1*max_speed
-                right_motor_speed = 0.3*max_speed
-                print('Aligning to the goal')  
-                  
-        elif distance_between(curr_pos, goal_pos) < pos_epsilon:
+            hit_angle = get_bearing_in_degrees(compass.getValues())
+            state = 'follow_obstacle'
+
+        elif distance_between(current_position, GOAL_POSITION) <= REACHED_GOAL:
             state = 'end'
+
+        elif not on_line(current_position, start_position, GOAL_POSITION):
+            # move back on line
+            heading_angle = current_angle
+            goal_angle = angle_of(start_position, GOAL_POSITION)
             
+            if (heading_angle - goal_angle) > GOAL_IN_RANGE:
+                print('Robot status: Aligning to the goal')
+                left_speed  = 0.5 * MAX_SPEED
+                right_speed = 0.1 * MAX_SPEED
+
+            elif (heading_angle - goal_angle) < -GOAL_IN_RANGE:
+                print('Robot status: Aligning to the goal')
+                left_speed  = 0.1 * MAX_SPEED
+                right_speed = 0.5 * MAX_SPEED
+
         else:
-            print('Moving to the goal')
-            left_motor.setVelocity(left_motor_speed)
-            right_motor.setVelocity(right_motor_speed)
+            print('Robot status: Moving to goal')
+            left_motor.setVelocity(left_speed)
+            right_motor.setVelocity(right_speed)
             
-            
-    elif state == 'follow the obstacle':
-        print('Following the obstacle')
-        
-        front_clear = max(prox_sensors_values[6:1]) < obs_prox
-        aligned_to_goal = (angle_of(curr_pos, goal_pos)> curr_angle*0.98) and (angle_of(curr_pos, goal_pos)< curr_angle*1.02)
-        
+    elif state == 'follow_obstacle':
+        print('Robot status: Following Obstacle Boundary')
+        front_clear = max(proximity_sensor_values[0:1]) < ENCOUNTERED_OBSTACLE and max(proximity_sensor_values[6:7]) < ENCOUNTERED_OBSTACLE
+        aligned_to_goal = angle_of(current_position, GOAL_POSITION) > 0.95*current_angle and angle_of(current_position, GOAL_POSITION) < 1.05*current_angle
+
         if front_clear and aligned_to_goal:
-            state = 'go to goal'
-            print('Goal is reachable')
-            left_motor_speed = max_speed*0.1
-            right_motor_speed = max_speed*0.3
-            start_pos = curr_pos
+            print('Robot status: Goal Reachable')
+            state = 'go_to_goal'
+            left_speed  = 0.20 * MAX_SPEED
+            right_speed = 0.50 * MAX_SPEED
+            start_position = current_position
             continue
-            
-        right_side_covered = prox_sensors_values[2] > obs_prox
-        if right_side_covered:
-            state = 'follow the obsatcle'
-        elif not right_side_covered:
-            left_motor_speed = max_speed*(-0.5)
-            right_motor_speed = max_speed*(0.5)
+  
+        right_side_covered = proximity_sensor_values[2] > ENCOUNTERED_OBSTACLE
+        if not right_side_covered:
+            left_speed  = -0.5 * MAX_SPEED
+            right_speed = 0.5 * MAX_SPEED
+
         else:
-            right_value = max(prox_sensors_values[0:2])
-            left_value = max(prox_sensors_values[5:7])
-            if right_value > 2.0*obs_prox:
-                left_motor_speed  = 0.20 * max_speed
-                right_motor_speed = 0.50 * max_speed
-            elif right_value < obs_prox and left_value < obs_prox:
-                left_motor_speed  = 0.50 * max_speed
-                right_motor_speed = 0.20 * max_speed
+            right_value = max(proximity_sensor_values[0:2])
+            left_value = max(proximity_sensor_values[5:7])
+
+            if right_value > 2.0*ENCOUNTERED_OBSTACLE:
+                left_speed  = 0.20 * MAX_SPEED
+                right_speed = 0.50 * MAX_SPEED
+
+            elif right_value < ENCOUNTERED_OBSTACLE and left_value < ENCOUNTERED_OBSTACLE:
+                left_speed  = 0.50 * MAX_SPEED
+                right_speed = 0.20 * MAX_SPEED
+
             else:
-                left_motor_speed  = 0.50 * max_speed
-                right_motor_speed = 0.50 * max_speed
+                left_speed  = 0.50 * MAX_SPEED
+                right_speed = 0.50 * MAX_SPEED
                 
     elif state == 'end':
-        print('Goal reached')
+        print('Robot status: Goal Reached')
         left_motor.setVelocity(0)
         right_motor.setVelocity(0)
         break
         
-    left_motor.setVelocity(left_motor_speed)
-    right_motor.setVelocity(right_motor_speed)
-
-# Enter here exit cleanup code.
-"""
-if __name__ == 'main':
-    robot = Robot()
-    run_bug0(robot)"""
+    left_motor.setVelocity(left_speed)
+    right_motor.setVelocity(right_speed)
