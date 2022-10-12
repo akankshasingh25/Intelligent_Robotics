@@ -1,10 +1,11 @@
 To Prove : Bug2 without memory is incomplete
 
-We know: A path planning algorithm is incomplete when the robot is not able to reach the goal point in a finite amount of time. 
+We know: 
+1. A path planning algorithm is incomplete when the robot is not able to reach the goal point in a finite amount of time. 
+2. The bug is exited if the current hit point is re-encountered and there is no leave point found before that.
 
 Prove by counterexample: An example showing that it never reaches a goal.
 
 Proof:
-Considering a scenario where there are obstacles
-Such that the robot hits the obstacle at different hit points on the same obstacle but since leave points is decided deterministically, the leave point for the all the hit points will be same.
-Hence, the robot will keep following the boundary of the obstacle and never reach the goal.
+Considering a scenario where there is a spiral obstacle.
+Such that the robot hits the obstacle for the first time and then finds the first leave point. The obstacle is a spiral the robot will encounter the same hit point again in the path but since the bug has no memory, the same loop is executed indefinitely and is not exited.
