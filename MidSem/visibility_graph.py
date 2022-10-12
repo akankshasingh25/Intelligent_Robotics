@@ -12,7 +12,7 @@ def visibility_graph(source, goal, polygons):
     for p in polygons:
         edges.extend(p.sides) # storing polygon edges
 
-    visibile_graph = []
+    visible_graph = []
 
     for p in range(len(points)-1):
         for q in range(p+1, len(points)):
@@ -32,5 +32,5 @@ def visibility_graph(source, goal, polygons):
                     break
                 
             if valid:
-                visibile_graph.append((points[p], points[q])) # storing the valid lines from p to q
-    return set(visibile_graph)
+                visible_graph.append((points[p], points[q])) # storing the valid lines from p to q
+    return set(visible_graph)
