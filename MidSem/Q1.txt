@@ -1,1 +1,13 @@
+Total time taken to cover all cells
 
+The area not including the obstacles is divided into trapezoids denoted by Ci, where i = 1, 2, .., 8. Each trapezoid has a starting and an endpoint (we sort the start and end points in one assumed axis, lets say x-axis in our case). We denote start and end points pf each Ci by si and ei.
+
+The time required to cover one cell be given by a function T(si, ei). The time for a trapezoid, will directly be dependent on the area covered in the trapezoid. 
+Let a function A, store the area that has been covered. Therefore, Ai stores the area that the robot covers in the ith trapezoid. 
+
+Once a trapezoid is covered fully, it has to move to the next one. The time required by the robot to reach the new start point after end point of the current trapezoid is encountered is given by t(ei, si+1).
+
+We can write, the total time taken to cover all eight cells would be:
+(T(s1, e1) + t(e1,s2)) +.............. + (T(s7, e7) + t(e7, s8)) + (T(s8, e8))
+= Summation of total time spent in covering all the trapezoid and
+summation of time spent in moving from one end point to next start point.
