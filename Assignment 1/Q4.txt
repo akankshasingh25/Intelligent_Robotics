@@ -1,0 +1,10 @@
+To Prove : Bug0 is incomplete
+
+We know: A path planning algorithm is incomplete when the robot is not able to reach the goal point in a finite amount of time. 
+
+Prove by counterexample: An example showing that it never reaches a goal.
+
+Proof:
+Consider a scenario where there’s one obstacle in a spiral shape. 
+In such a case, the robot will hit the obstacle at different hit points on the same obstacle but leave at the same leave point. 
+Hence, the robot will keep following the boundary of the obstacle, never reaching the goal. This example has been implemented in Q.2.
