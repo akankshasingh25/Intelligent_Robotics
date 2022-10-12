@@ -1,1 +1,5 @@
+How do you ensure that the 2 pursuers do not collide with each other?
 
+To ensure, the pursuers do not collide we can,
+1. specify region for pursuers that is not common with the other. A pursuer searches only in its region.
+2. we can deactivate a pursuer (lets say pursuer 2) everytime two pursuer in a specificed range for suspected for collision and reactivate if the range increases between them.
